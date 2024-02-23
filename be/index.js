@@ -10,14 +10,15 @@ let id = 1;
 
 const user = [{ id, name: "Zulsar", age: 23, phone: "88888888" }];
 
-app.get("/user", (request, response) => {
+app.get("/test", (request, response) => {
   const index = user.findIndex((user) => {
     return request.query.id == user.id;
   });
   response.json(user[index]);
+  response.send("ajilsan");
 });
 
-app.get("/test", (request, response) => {
+app.get("/user", (request, response) => {
   console.log("user", user);
   response.json(user);
 });
@@ -54,8 +55,9 @@ app.delete("/user", (req, res) => {
   const index = user.findIndex((user) => {
     return req.body.id === user.id;
   });
+  console.log(req.body.id, "id");
   user.splice(index, 1);
-
+  res.json(user);
   res.send("amjilttai ustgalaa");
 });
 

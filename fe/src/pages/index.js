@@ -3,12 +3,13 @@ import { Inter } from "next/font/google";
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  const [name, setName] = useState({ name: "hi" });
-  const [age, setAge] = useState({ age: "99" });
-  const [phone, setPhone] = useState({ phone: "00" });
+  const [name, setName] = useState("hi");
+  const [age, setAge] = useState("99");
+  const [phone, setPhone] = useState("00000000");
   const [data, setData] = useState();
   // console.log(name);
-  const addData = async () => {
+  const addData = async (event) => {
+    event.preventDefault();
     const res = await fetch("http://localhost:8080/user", {
       method: "POST",
       cache: "no-cache",
@@ -17,10 +18,9 @@ export default function Home() {
         Accept: "application/json, text/plain, */*",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name, age, phone }),
-    }).then((res) => {
-      return res;
-    });
+      body: JSON.stringify({ name: name, age: age, phone: phone }),
+    }).then((res) => res.json());
+    setData(res);
     console.log(data);
   };
 
@@ -34,7 +34,7 @@ export default function Home() {
     <div className="container m-auto">
       <div className="w-[300px] h-[250px] border border-gray-300 px-3 py-5 flex flex-col gap-5 rounded-xl ">
         <h1 className="text-center text-xl mb-5">User CRUD</h1>
-        <form className="flex flex-col gap-3">
+        <form className="flex flex-col gap-3" onSubmit={addData}>
           <label className="flex justify-between">
             Username:
             <input
@@ -62,44 +62,48 @@ export default function Home() {
           </label>
 
           <button
-            onClick={addData}
+            type="submit"
             className="border border-black bg-gray-100 rounded-md py-1 px-3 hover:bg-gray-100 active:bg-red-50"
           >
             Submit
           </button>
-          <button
+          {/* <button
             onClick={testData}
             className="border border-black bg-gray-100 rounded-md py-1 px-3 hover:bg-gray-100 active:bg-red-50"
           >
             Submit
-          </button>
+          </button> */}
         </form>
       </div>
       <div className="w-[700px] h-[250px] border border-gray-300 px-3 py-5 flex gap-5 rounded-xl ">
         <ul>
-          id
-          {data?.map((el) => (
-            <li>{el.id}</li>
+          {data?.map((el, index) => (
+            <div key={index}>
+              <li>{el.id}</li>
+              <li>{el.name}</li>
+              <li>{el.age}</li>
+              <li>{el.phone}</li>
+            </div>
           ))}
         </ul>
-        <ul>
+        {/* <ul>
           <h1>Username</h1>
-          {data?.map((el) => (
-            <li>{el.name}</li>
+          {data?.map((el, ) => (
+            <li key={index}>{el.name}</li>
           ))}
-        </ul>
-        <ul>
+        </ul> */}
+        {/* <ul>
           <h1>Age</h1>
-          {data?.map((el) => (
-            <li>{el.age}</li>
+          {data?.map((el, index) => (
+            <li key={index}>{el.age}</li>
           ))}
         </ul>
         <ul>
           <h1>Phone</h1>
-          {data?.map((el) => (
-            <li>{el.phone}</li>
+          {data?.map((el, index) => (
+            <li key={index}>{el.phone}</li>
           ))}
-        </ul>
+        </ul> */}
       </div>
     </div>
   );
