@@ -6,10 +6,10 @@ export default function Home() {
   const [name, setName] = useState({ name: "hi" });
   const [age, setAge] = useState({ age: "99" });
   const [phone, setPhone] = useState({ phone: "00" });
-  const [data, setData] = useState([]);
+  const [data, setData] = useState();
   // console.log(name);
-  const createData = async () => {
-    const data = await fetch("http://localhost:8080/user", {
+  const addData = async () => {
+    const res = await fetch("http://localhost:8080/user", {
       method: "POST",
       cache: "no-cache",
       credentials: "same-origin", // include, *same-origin, omit
@@ -17,14 +17,15 @@ export default function Home() {
         Accept: "application/json, text/plain, */*",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name: name, age: age, phone: phone }),
-    }).then((res)=> res.json());
-    setData(res);
+      body: JSON.stringify({ name, age, phone }),
+    }).then((res) => {
+      return res;
+    });
     console.log(data);
-
   };
-  const addData = () => {
-    createData();
+
+  const testData = () => {
+    console.log("HELLO", data);
   };
   // useEffect(() => {
   //   fetchData();
@@ -37,7 +38,7 @@ export default function Home() {
           <label className="flex justify-between">
             Username:
             <input
-              onChange={(event) => setName( event.target.value )}
+              onChange={(event) => setName(event.target.value)}
               className="border rounded-md"
               name="username"
             ></input>
@@ -46,7 +47,7 @@ export default function Home() {
           <label className="flex justify-between">
             Age:
             <input
-              onChange={(event) => setAge( event.target.value )}
+              onChange={(event) => setAge(event.target.value)}
               className="border rounded-md"
               name="age"
             ></input>
@@ -54,7 +55,7 @@ export default function Home() {
           <label className="flex justify-between">
             Phone:
             <input
-              onChange={(event) => setPhone(event.target.value )}
+              onChange={(event) => setPhone(event.target.value)}
               className="border rounded-md"
               name="age"
             ></input>
@@ -66,21 +67,39 @@ export default function Home() {
           >
             Submit
           </button>
+          <button
+            onClick={testData}
+            className="border border-black bg-gray-100 rounded-md py-1 px-3 hover:bg-gray-100 active:bg-red-50"
+          >
+            Submit
+          </button>
         </form>
       </div>
-      <div className="w-[700px] h-[250px] border border-gray-300 px-3 py-5 flex flex-col gap-5 rounded-xl ">
-        <ul>hi
-          {data?.map((el) => (<li>{el.name}</li>))}
+      <div className="w-[700px] h-[250px] border border-gray-300 px-3 py-5 flex gap-5 rounded-xl ">
+        <ul>
+          id
+          {data?.map((el) => (
+            <li>{el.id}</li>
+          ))}
         </ul>
-        <div>
+        <ul>
           <h1>Username</h1>
-        </div>
-        <div>
+          {data?.map((el) => (
+            <li>{el.name}</li>
+          ))}
+        </ul>
+        <ul>
           <h1>Age</h1>
-        </div>
-        <div>
+          {data?.map((el) => (
+            <li>{el.age}</li>
+          ))}
+        </ul>
+        <ul>
           <h1>Phone</h1>
-        </div>
+          {data?.map((el) => (
+            <li>{el.phone}</li>
+          ))}
+        </ul>
       </div>
     </div>
   );
