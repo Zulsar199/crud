@@ -1,63 +1,80 @@
 import express from "express";
 import cors from "cors";
+import {
+  updateFile,
+  deleteFromFile,
+  readFromFile,
+  insertToFile,
+} from "./file.js";
 
 const port = 8080;
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-let id = 1;
+let id = 0;
 
-const user = [{ id, name: "Zulsar", age: 23, phone: "88888888" }];
+const findMaxID = () => {
+  const data = readFromFile();
+  console.log("hello world", data);
+  data.forEach((element) => {
+    if (element.id > id) {
+      id = element.id;
+    }
+  });
+};
+
+findMaxID();
+
+console.log("maxid = ", id);
 
 app.get("/test", (request, response) => {
-  const index = user.findIndex((user) => {
-    return request.query.id == user.id;
-  });
-  response.json(user[index]);
-  response.send("ajilsan");
+  // const index = user.findIndex((user) => {
+  //   return request.query.id == user.id;
+  // });
+  // response.json(user[index]);
+
+  const data = readFromFile();
+  response.send(data);
 });
 
 app.get("/user", (request, response) => {
-  console.log("user", user);
-  response.json(user);
+  const data = readFromFile();
+  response.send(data);
 });
 
 app.post("/user", (req, res) => {
   id++;
-  user.push({
+
+  insertToFile({
     id,
     name: req.body.name,
     age: req.body.age,
     phone: req.body.phone,
   });
-  console.log(req.body);
 
-  res.send(user);
+  res.send(readFromFile());
 });
 
 app.patch("/user", (req, res) => {
-  const index = user.findIndex((user) => {
-    return req.body.id === user.id;
-  });
-
-  user[index].name = req.body.name;
-  user[index].age = req.body.age;
-  user[index].phone = req.body.phone;
+  const updatedData = updateFile(
+    req.body.id,
+    req.body.name,
+    req.body.age,
+    req.body.phone
+  );
 
   res.json({
     status: 200,
     message: "success",
+    updatedData,
   });
 });
 
 app.delete("/user", (req, res) => {
-  const index = user.findIndex((user) => {
-    return req.body.id === user.id;
-  });
-  console.log(req.body.id, "id");
-  user.splice(index, 1);
-  res.json(user);
+  const data = deleteFromFile(req.body.id);
+
+  res.json(data);
   res.send("amjilttai ustgalaa");
 });
 
