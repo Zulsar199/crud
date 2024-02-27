@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import EditData from "@/component/editData";
+import EditData from "@/components/editData";
 
 export default function Home() {
   const [data, setData] = useState([]);
@@ -62,19 +62,50 @@ export default function Home() {
 
     console.log(isPopupOpen);
   };
-
+  let userCreateStyle = {};
+  let bodyBackgroundStyle = {};
+  let userUpdateStyle = {};
+  let position = {};
+  // const mystyle = {
+  //   color: "white",
+  //   backgroundColor: "DodgerBlue",
+  //   padding: "10px",
+  //   fontFamily: "Arial"
+  // };
   useEffect(() => {
+    if (isPopupOpen) {
+      position = { position: "relative", alignItems: "center" };
+      userCreateStyle = { display: "hidden" };
+      bodyBackgroundStyle = {
+        backgroundColor: "#e2e8f0",
+        position: "absolute",
+        zIndex: 2,
+        width: "100%",
+        height: "100%",
+      };
+      userUpdateStyle = { position: "absolute", zIndex: 3 };
+    }
     console.log("data is been changed");
   }, [data]);
 
   const updateMainData = (id, name, age, phone) => {
     let newJson = { id, name, age, phone };
-    const newData = data.filter((user) => {
-      return user.id != id;
+    const index = data.findIndex((user) => {
+      return id == user.id;
     });
-    newData.push(newJson);
+    console.log("index", index);
+    data[index] = { id: id, name: name, age: age, phone: phone };
+    // const updateUser = {
+    //   data[index].id: id,
 
-    setData(newData);
+    // }
+    // const newData = data.filter((user) => {
+    //   return user.id != id;
+    // });
+    // newData.push(newJson);
+
+    // setData(newData);
+    setData(data);
   };
 
   const resetUser = () => {
@@ -129,9 +160,15 @@ export default function Home() {
   };
 
   return (
-    <div className="container m-auto">
-      <div>
-        <div className="w-[300px] h-[250px] border border-gray-300 px-3 py-5 flex flex-col gap-5 rounded-xl ">
+    <div
+      style={position}
+      className="container m-auto h-[100vh] flex justify-center"
+    >
+      <div
+        style={userCreateStyle}
+        className="flex flex-col items-center gap-[50px]"
+      >
+        <div className="w-[300px] h-[250px] border border-gray-300 px-3 py-5 flex flex-col gap-5 rounded-xl mt-[70px]">
           <h1 className="text-center text-xl mb-5">User Create</h1>
           <form className="flex flex-col gap-3" onSubmit={addData}>
             <label className="flex justify-between">
@@ -171,39 +208,59 @@ export default function Home() {
             </button>
           </form>
         </div>
-        <div className="w-[700px] h-[250px] border border-gray-300 px-3 py-5 flex gap-5 rounded-xl ">
-          <ul>
-            <div className="flex gap-4 font-bold">
-              <li>id</li>
-              <li>name</li>
-              <li>age</li>
-              <li>phone</li>
-            </div>
-
-            {data?.map((el) => (
-              <div key={el.id} className="flex gap-4">
-                <li>{el.id}</li>
-                <li>{el.name}</li>
-                <li>{el.age}</li>
-                <li>{el.phone}</li>
-                <button
-                  onClick={() => editData(el.id, el.name, el.age, el.phone)}
-                  className="border border-black rounded-md bg-yellow-100 py-1 px-4"
-                >
-                  edit
-                </button>
-                <button
-                  onClick={() => deleteData(el.id)}
-                  className="border border-black rounded-md bg-red-100 py-1 px-4"
-                >
-                  delete
-                </button>
-              </div>
-            ))}
-          </ul>
+        <div className="overflow-x-auto border border-gray-300 rounded-xl p-3">
+          <table className="min-w-full divide-y divide-gray-400 ">
+            <thead>
+              <tr>
+              <th>#</th>
+                <th>id</th>
+                <th>name</th>
+                <th>age</th>
+                <th>phone</th>
+                <th>actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {data?.map((el, i) => (
+                <tr className="*:px-3 " key={el.id}>
+                  <td className="w-10">{i+1}</td>
+                  <td className="w-10">{el.id}</td>
+                  <td className="w-[300px]">{el.name}</td>
+                  <td className="w-3">{el.age}</td>
+                  <td className="w-[150px]">{el.phone}</td>
+                  <td className="flex gap-3">
+                    <button
+                      onClick={() => editData(el.id, el.name, el.age, el.phone)}
+                      className="border border-black rounded-md bg-yellow-100 py-1 px-4 active:bg-yellow-300"
+                      aria-label="Edit item"
+                    >
+                      edit
+                    </button>
+                    <button
+                      onClick={() => {
+                        // if (
+                        //   window.confirm(
+                        //     "Are you sure you want to delete this item?"
+                        //   )
+                        // ) {
+                        //   deleteData(el.id);
+                        // }
+                        deleteData(el.id);
+                      }}
+                      className="border border-black rounded-md bg-red-100 py-1 px-4 active:bg-red-300"
+                      aria-label="Delete item"
+                    >
+                      delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
-      <div className="">
+      <div style={bodyBackgroundStyle}></div>
+      <div style={userUpdateStyle} className="">
         {isPopupOpen && (
           <EditData
             id={id}
