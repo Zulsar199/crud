@@ -57,6 +57,8 @@ app.post("/user", (req, res) => {
 });
 
 app.patch("/user", (req, res) => {
+  console.log("id=", req.body.id);
+  console.log("body=", req.body);
   const updatedData = updateFile(
     req.body.id,
     req.body.name,
@@ -67,7 +69,7 @@ app.patch("/user", (req, res) => {
   res.json({
     status: 200,
     message: "success",
-    updatedData,
+    //   updatedData,
   });
 });
 
@@ -81,28 +83,3 @@ app.delete("/user", (req, res) => {
 app.listen(port, () => {
   console.log(`ene port deer server  aslaa http://localhost:${port}`);
 });
-
-// const arr = [{ name: "zula", age: "30", lastName: "hi", id: 1 }, { name: "gal", age: "20", lastName: "hello", id: 2 }];
-
-// app.get("/", (req, res) => {
-//   res.send(arr);
-// });
-
-// app.post("/", (req, res) => {
-//   console.log("hello world workin over here");
-//   arr.push({ name: "duluu", age: "20", lastName: "hello", id: 3 });
-//   res.send(arr);
-// });
-
-// app.delete("/", (req, res) => {
-//   // Find the index of the object with id equal to  1
-//   const indexToDelete = arr.findIndex(item => item.id ===  1);
-
-//   // If the object is found, remove it from the array
-//   if (indexToDelete !== -1) {
-//     arr.splice(indexToDelete,  1);
-//   }
-
-//   // Send the updated array as a response
-//   res.send(arr);
-// });

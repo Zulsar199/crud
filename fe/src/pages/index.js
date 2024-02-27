@@ -1,27 +1,66 @@
-import Image from "next/image";
-import { Inter } from "next/font/google";
 import { useEffect, useState } from "react";
 import EditData from "@/component/editData";
 
 export default function Home() {
-  const [name, setName] = useState("hi");
-  const [age, setAge] = useState("99");
-  const [phone, setPhone] = useState("00000000");
   const [data, setData] = useState([]);
 
   const [id, setId] = useState();
-  const [editName, setEditName] = useState("");
-  const [editAge, setEditAge] = useState();
-  const [editPhone, setEditPhone] = useState("");
-  // console.log(name);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-  // const handleOpenPopup = () => {
-  //   setIsPopupOpen(true);
-  // };
+  const [user, setUser] = useState({
+    name: "",
+    age: "",
+    phone: "",
+  });
+
+  const updateName = (name) => {
+    setUser((prevUser) => ({
+      ...prevUser,
+      name,
+    }));
+  };
+
+  const updateAge = (age) => {
+    setUser((prevUser) => ({
+      ...prevUser,
+      age,
+    }));
+  };
+
+  const updatePhone = (phone) => {
+    setUser((prevUser) => ({
+      ...prevUser,
+      phone,
+    }));
+  };
+
+  const fetchData = async () => {
+    const res = await fetch("http://localhost:8080/user", {
+      method: "GET",
+      cache: "no-cache",
+      credentials: "same-origin", // include, *same-origin, omit
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        "Content-Type": "application/json",
+      },
+    }).then((res) => res.json());
+    setData(res);
+    console.log("data is ", data);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleOpenPopup = () => {
+    setIsPopupOpen(true);
+  };
 
   const handleClosePopup = () => {
+    console.log("Handle close is working");
     setIsPopupOpen(false);
+
+    console.log(isPopupOpen);
   };
 
   useEffect(() => {
@@ -29,12 +68,22 @@ export default function Home() {
   }, [data]);
 
   const updateMainData = (id, name, age, phone) => {
-    data.forEach((element) => {
-      if (element.id == id) {
-        element.name = name;
-        element.age = age;
-        element.phone = phone;
-      }
+    let newJson = { id, name, age, phone };
+    const newData = data.filter((user) => {
+      return user.id != id;
+    });
+    newData.push(newJson);
+
+    setData(newData);
+  };
+
+  const resetUser = () => {
+    setUser((prevUser) => {
+      const newUser = {};
+      Object.keys(prevUser).forEach((key) => {
+        newUser[key] = "";
+      });
+      return newUser;
     });
   };
 
@@ -48,34 +97,23 @@ export default function Home() {
         Accept: "application/json, text/plain, */*",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name: name, age: age, phone: phone }),
+      body: JSON.stringify(user),
     }).then((res) => res.json());
     setData(res);
     console.log(data);
-  };
-
-  const testData = () => {
-    console.log("HELLO", data);
+    resetUser();
   };
 
   const editData = (id, editName, editAge, editPhone) => {
-    console.log(
-      "editName = ",
-      editName,
-      " editAge = ",
-      editAge,
-      " editPhone = ",
-      editPhone
-    );
-    setEditAge(editAge);
-    setEditName(editName);
-    setEditPhone(editPhone);
     setId(id);
-    setIsPopupOpen(true);
+    updateAge(editAge);
+    updateName(editName);
+    updatePhone(editPhone);
+
+    handleOpenPopup();
   };
 
   const deleteData = async (id) => {
-    event.preventDefault();
     const res = await fetch("http://localhost:8080/user", {
       method: "DELETE",
       cache: "no-cache",
@@ -89,9 +127,7 @@ export default function Home() {
     setData(res);
     console.log(data);
   };
-  // useEffect(() => {
-  //   fetchData();
-  // }, []);
+
   return (
     <div className="container m-auto">
       <div>
@@ -101,26 +137,29 @@ export default function Home() {
             <label className="flex justify-between">
               Username:
               <input
-                onChange={(event) => setName(event.target.value)}
+                onChange={(event) => updateName(event.target.value)}
                 className="border rounded-md"
-                name="username"
+                name="name"
+                value={user.name}
               ></input>
             </label>
 
             <label className="flex justify-between">
               Age:
               <input
-                onChange={(event) => setAge(event.target.value)}
+                onChange={(event) => updateAge(event.target.value)}
                 className="border rounded-md"
                 name="age"
+                value={user.age}
               ></input>
             </label>
             <label className="flex justify-between">
               Phone:
               <input
-                onChange={(event) => setPhone(event.target.value)}
+                onChange={(event) => updatePhone(event.target.value)}
                 className="border rounded-md"
-                name="age"
+                name="phone"
+                value={user.phone}
               ></input>
             </label>
 
@@ -131,7 +170,6 @@ export default function Home() {
               Submit
             </button>
           </form>
-          <button onClick={testData}>asdf</button>
         </div>
         <div className="w-[700px] h-[250px] border border-gray-300 px-3 py-5 flex gap-5 rounded-xl ">
           <ul>
@@ -169,12 +207,11 @@ export default function Home() {
         {isPopupOpen && (
           <EditData
             id={id}
-            name={editName}
-            age={editAge}
-            phone={editPhone}
+            user={user}
             handleClose={handleClosePopup}
             setData={setData}
             updateMainData={updateMainData}
+            resetUser={resetUser}
           ></EditData>
         )}
       </div>

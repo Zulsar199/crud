@@ -1,11 +1,24 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 export default function EditData(props) {
-  const [name, setName] = useState(props.name);
-  const [age, setAge] = useState(props.age);
-  const [phone, setPhone] = useState(props.phone);
+  const [user, setUser] = useState({
+    id: props.id,
+    name: props.user.name,
+    age: props.user.age,
+    phone: props.user.phone,
+  });
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setUser((prevUser) => ({
+      ...prevUser,
+      [name]: value,
+    }));
+  };
 
   const editData = async (event) => {
     event.preventDefault();
+    console.log("json ", JSON.stringify(user));
+
     const res = await fetch("http://localhost:8080/user", {
       method: "PATCH",
       cache: "no-cache",
@@ -15,20 +28,20 @@ export default function EditData(props) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        id: props.id,
-        name: name,
-        age: age,
-        phone: phone,
+        id: user.id,
+        name: user.name,
+        age: user.age,
+        phone: user.phone,
       }),
     }).then((res) => res.json());
-    //     props.setData(res);
-    props.updateMainData(props.id, name, age, phone);
-    props.handleClose;
+    props.updateMainData(props.id, user.name, user.age, user.phone);
+    props.resetUser();
+    props.handleClose();
   };
 
-  console.log(props.name, props.age, props.phone, props.id);
+  console.log(props.user.name, props.user.age, props.user.phone, props.id);
 
-  console.log(name, age, phone, props.id);
+  console.log(user, props.id);
 
   return (
     <div className="w-[300px] h-[250px] border border-gray-300 px-3 py-5 flex flex-col gap-5 rounded-xl ">
@@ -37,29 +50,29 @@ export default function EditData(props) {
         <label className="flex justify-between">
           Username:
           <input
-            onChange={(event) => setName(event.target.value)}
+            onChange={(event) => handleInputChange(event)}
             className="border rounded-md"
-            name="username"
-            value={name}
+            name="name"
+            value={user.name}
           ></input>
         </label>
 
         <label className="flex justify-between">
           Age:
           <input
-            onChange={(event) => setAge(event.target.value)}
+            onChange={(event) => handleInputChange(event)}
             className="border rounded-md"
             name="age"
-            value={age}
+            value={user.age}
           ></input>
         </label>
         <label className="flex justify-between">
           Phone:
           <input
-            onChange={(event) => setPhone(event.target.value)}
+            onChange={(event) => handleInputChange(event)}
             className="border rounded-md"
             name="phone"
-            value={phone}
+            value={user.phone}
           ></input>
         </label>
 
