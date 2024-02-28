@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import EditData from "@/components/editData";
+import EditData from "@/components/EditData";
 
 export default function Home() {
   const [data, setData] = useState([]);
 
   const [id, setId] = useState();
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [warningMessage, setWarningMessage] = useState("");
 
   const [user, setUser] = useState({
     name: "",
@@ -59,34 +60,58 @@ export default function Home() {
   const handleClosePopup = () => {
     console.log("Handle close is working");
     setIsPopupOpen(false);
-
+    resetUser();
     console.log(isPopupOpen);
   };
   let userCreateStyle = {};
   let bodyBackgroundStyle = {};
   let userUpdateStyle = {};
   let position = {};
-  // const mystyle = {
-  //   color: "white",
-  //   backgroundColor: "DodgerBlue",
-  //   padding: "10px",
-  //   fontFamily: "Arial"
+
+  const isSubmitDisabled =
+    user.name == "" || user.age == "" || user.phone == "";
+  // const warner = (input, type) => {
+  //   let style = {};
+  //   if (input === "") {
+  //     style = { borderColor: "red" };
+  //   } else if (
+  //     type === "age" &&
+  //     (typeof input !== "number" || input.length < 3 || input.length > 1)
+  //   ) {
+  //     style = { borderColor: "red" };
+  //   } else if (
+  //     type === "phone" &&
+  //     (typeof input !== "number" || input.length !== 8)
+  //   ) {
+  //     style = { borderColor: "red" };
+  //   } else if (
+  //     type === "name" &&
+  //     (typeof input !== "string" || input.length < 3 || input.length > 100)
+  //   ) {
+  //     style = { borderColor: "red" };
+  //   }
+  //   return style;
   // };
+
+  if (isPopupOpen) {
+    position = {
+      position: "relative",
+      backgroundColor: "#F7F7F8",
+    };
+    userCreateStyle = { display: "hidden" };
+    bodyBackgroundStyle = {
+      backgroundColor: "#e2e8f0",
+      position: "absolute",
+      zIndex: 2,
+      width: "100%",
+      height: "100%",
+      opacity: 0.5,
+    };
+    userUpdateStyle = { position: "absolute", zIndex: 3, marginTop: "70px" };
+  }
   useEffect(() => {
-    if (isPopupOpen) {
-      position = { position: "relative", alignItems: "center" };
-      userCreateStyle = { display: "hidden" };
-      bodyBackgroundStyle = {
-        backgroundColor: "#e2e8f0",
-        position: "absolute",
-        zIndex: 2,
-        width: "100%",
-        height: "100%",
-      };
-      userUpdateStyle = { position: "absolute", zIndex: 3 };
-    }
     console.log("data is been changed");
-  }, [data]);
+  }, [data, warningMessage]);
 
   const updateMainData = (id, name, age, phone) => {
     let newJson = { id, name, age, phone };
@@ -117,9 +142,43 @@ export default function Home() {
       return newUser;
     });
   };
-
   const addData = async (event) => {
     event.preventDefault();
+    // Check if the user input is valid
+    if (user.name === "" || user.age === "" || user.phone === "") {
+      setWarningMessage("All fields are required.");
+      return; // Prevent submission if there are validation errors
+    }
+    if (
+      !/^[a-zA-Z]+$/.test(user.name)
+    ) {
+      setWarningMessage(
+        "The name must consist of letters."
+      );
+      return;
+    }
+    if (
+      user.name.length < 3 ||
+      user.name.length > 100
+    ) {
+      setWarningMessage(
+        "The name must be between 3 and 100 characters long."
+      );
+      return;
+    }
+    // Assuming age and phone are numbers and have specific length requirements
+    if (isNaN(user.age)) {
+      setWarningMessage("Age must be number");
+      return;
+    }
+    if (Number(user.age) >= 110) {
+      setWarningMessage("Age must be less than 110");
+      return;
+    }
+    if (isNaN(user.phone) || user.phone.length !== 8) {
+      setWarningMessage("Phone must be an 8-digit number.");
+      return;
+    }
     const res = await fetch("http://localhost:8080/user", {
       method: "POST",
       cache: "no-cache",
@@ -132,7 +191,10 @@ export default function Home() {
     }).then((res) => res.json());
     setData(res);
     console.log(data);
+    // warner();
     resetUser();
+    // Clear the warning message after successful submission
+    setWarningMessage("");
   };
 
   const editData = (id, editName, editAge, editPhone) => {
@@ -160,10 +222,7 @@ export default function Home() {
   };
 
   return (
-    <div
-      style={position}
-      className="container m-auto h-[100vh] flex justify-center"
-    >
+    <div style={position} className="h-[100vh] flex justify-center">
       <div
         style={userCreateStyle}
         className="flex flex-col items-center gap-[50px]"
@@ -171,38 +230,48 @@ export default function Home() {
         <div className="w-[300px] h-[250px] border border-gray-300 px-3 py-5 flex flex-col gap-5 rounded-xl mt-[70px]">
           <h1 className="text-center text-xl mb-5">User Create</h1>
           <form className="flex flex-col gap-3" onSubmit={addData}>
-            <label className="flex justify-between">
-              Username:
+            <div className="flex justify-between">
+              <label className="flex justify-between">Username:</label>
               <input
                 onChange={(event) => updateName(event.target.value)}
                 className="border rounded-md"
+                // style={warner(user.name, "name")}
                 name="name"
                 value={user.name}
+                // placeholder={user.name === "" ? warner(user.name) : ""}
+                // placeholder="hello"
               ></input>
-            </label>
+            </div>
 
-            <label className="flex justify-between">
-              Age:
+            <div className="flex justify-between">
+              <label className="flex justify-between">Age:</label>
               <input
                 onChange={(event) => updateAge(event.target.value)}
                 className="border rounded-md"
+                // style={warner(user.age, "age")}
                 name="age"
                 value={user.age}
+                // placeholder={user.age === "" ? warner(user.age) : ""}
               ></input>
-            </label>
-            <label className="flex justify-between">
-              Phone:
+            </div>
+            <div className="flex justify-between">
+              <label className="flex justify-between">Phone:</label>
               <input
                 onChange={(event) => updatePhone(event.target.value)}
                 className="border rounded-md"
+                // style={warner(user.phone, "phone")}
                 name="phone"
                 value={user.phone}
+                // placeholder={user.phone === "" ?"Username is required" : ""}
               ></input>
-            </label>
+            </div>
+
+            {warningMessage && <p style={{ color: "red" }}>{warningMessage}</p>}
 
             <button
+              // disabled={isSubmitDisabled}
               type="submit"
-              className="border border-black bg-gray-100 rounded-md py-1 px-3 hover:bg-gray-100 active:bg-red-50"
+              className="border border-black rounded-md py-1 px-3 bg-gray-100 hover:bg-green-100 hover:border-green-400 active:bg-green-50"
             >
               Submit
             </button>
@@ -212,7 +281,7 @@ export default function Home() {
           <table className="min-w-full divide-y divide-gray-400 ">
             <thead>
               <tr>
-              <th>#</th>
+                <th>#</th>
                 <th>id</th>
                 <th>name</th>
                 <th>age</th>
@@ -223,7 +292,7 @@ export default function Home() {
             <tbody className="divide-y divide-gray-200">
               {data?.map((el, i) => (
                 <tr className="*:px-3 " key={el.id}>
-                  <td className="w-10">{i+1}</td>
+                  <td className="w-10">{i + 1}</td>
                   <td className="w-10">{el.id}</td>
                   <td className="w-[300px]">{el.name}</td>
                   <td className="w-3">{el.age}</td>
@@ -231,7 +300,7 @@ export default function Home() {
                   <td className="flex gap-3">
                     <button
                       onClick={() => editData(el.id, el.name, el.age, el.phone)}
-                      className="border border-black rounded-md bg-yellow-100 py-1 px-4 active:bg-yellow-300"
+                      className="border border-yellow-400 rounded-md py-1 px-4 bg-yellow-100 hover:bg-yellow-200 active:bg-yellow-50"
                       aria-label="Edit item"
                     >
                       edit
@@ -247,7 +316,7 @@ export default function Home() {
                         // }
                         deleteData(el.id);
                       }}
-                      className="border border-black rounded-md bg-red-100 py-1 px-4 active:bg-red-300"
+                      className="border border-red-400 rounded-md py-1 px-4 bg-red-100 hover:bg-red-200 active:bg-red-50"
                       aria-label="Delete item"
                     >
                       delete
@@ -259,7 +328,7 @@ export default function Home() {
           </table>
         </div>
       </div>
-      <div style={bodyBackgroundStyle}></div>
+      <div onClick={handleClosePopup} style={bodyBackgroundStyle}></div>
       <div style={userUpdateStyle} className="">
         {isPopupOpen && (
           <EditData

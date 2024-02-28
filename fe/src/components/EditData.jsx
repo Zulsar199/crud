@@ -46,35 +46,41 @@ const EditData = (props) => {
   console.log(user, props.id);
 
   return (
-    <div className="w-[300px] h-[400px] bg-white border border-gray-300 px-3 py-5 flex flex-col gap-5 rounded-xl">
+    <div className="w-[300px] h-[250px] bg-white border border-gray-300 px-3 py-5 flex flex-col gap-5 rounded-xl">
       <h1 className="text-center text-xl mb-5">User Update</h1>
       <form className="flex flex-col gap-3" onSubmit={editData}>
-        <label className="flex justify-between">Username:</label>
-        <input
-          onChange={(event) => handleInputChange(event)}
-          className="border rounded-md"
-          name="name"
-          value={user.name}
-        ></input>
+        <div className="flex justify-between">
+          <label className="flex justify-between">Username:</label>
+          <input
+            onChange={(event) => handleInputChange(event)}
+            className="border rounded-md"
+            name="name"
+            value={user.name}
+          ></input>
+        </div>
 
-        <label className="flex justify-between">Age:</label>
-        <input
-          onChange={(event) => handleInputChange(event)}
-          className="border rounded-md"
-          name="age"
-          value={user.age}
-        ></input>
-        <label className="flex justify-between">Phone:</label>
-        <input
-          onChange={(event) => handleInputChange(event)}
-          className="border rounded-md"
-          name="phone"
-          value={user.phone}
-        ></input>
+        <div className="flex justify-between">
+          <label className="flex justify-between">Age:</label>
+          <input
+            onChange={(event) => handleInputChange(event)}
+            className="border rounded-md"
+            name="age"
+            value={user.age}
+          ></input>
+        </div>
+        <div className="flex justify-between">
+          <label className="flex justify-between">Phone:</label>
+          <input
+            onChange={(event) => handleInputChange(event)}
+            className="border rounded-md"
+            name="phone"
+            value={user.phone}
+          ></input>
+        </div>
 
         <button
           type="submit"
-          className="border border-black bg-gray-100 rounded-md py-1 px-3 hover:bg-gray-100 active:bg-red-50"
+          className="border border-black bg-gray-100 rounded-md py-1 px-3 bg-gray-100 hover:bg-green-100 hover:border-green-400 active:bg-green-50"
         >
           save
         </button>
