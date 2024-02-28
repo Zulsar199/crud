@@ -258,14 +258,14 @@ export default function Home() {
                     </button>
                     <button
                       onClick={() => {
-                        // if (
-                        //   window.confirm(
-                        //     "Are you sure you want to delete this item?"
-                        //   )
-                        // ) {
-                        //   deleteData(el.id);
-                        // }
-                        deleteData(el.id);
+                        if (
+                          window.confirm(
+                            "Are you sure you want to delete this item?"
+                          )
+                        ) {
+                          deleteData(el.id);
+                        }
+                        // deleteData(el.id);
                       }}
                       className="border border-red-400 rounded-md py-1 px-4 bg-red-100 hover:bg-red-200 active:bg-red-50"
                       aria-label="Delete item"
