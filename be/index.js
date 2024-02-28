@@ -1,11 +1,47 @@
 import express from "express";
 import cors from "cors";
-import {
-  updateFile,
-  deleteFromFile,
-  readFromFile,
-  insertToFile,
-} from "./file.js";
+import fs from "fs";
+
+function readFromFile() {
+  const data = fs.readFileSync("dataBase.json");
+  return JSON.parse(data);
+}
+
+function insertToFile(data) {
+  const allData = readFromFile();
+  allData.push(data);
+
+  fs.writeFileSync("dataBase.json", JSON.stringify(allData));
+  return allData;
+}
+
+function updateFile(id, name, age, phone) {
+  const allData = readFromFile();
+  const index = allData.findIndex((user) => {
+    return id === user.id;
+  });
+  console.log("index ", index);
+  console.log("id ", id);
+
+  allData[index].name = name;
+  allData[index].age = age;
+  allData[index].phone = phone;
+
+  fs.writeFileSync("dataBase.json", JSON.stringify(allData));
+
+  return allData;
+}
+
+function deleteFromFile(id) {
+  const allData = readFromFile();
+  const filteredData = allData.filter((user) => {
+    return id !== user.id;
+  });
+
+  fs.writeFileSync("dataBase.json", JSON.stringify(filteredData));
+
+  return filteredData;
+}
 
 const port = 8080;
 const app = express();
@@ -29,11 +65,6 @@ findMaxID();
 console.log("maxid = ", id);
 
 app.get("/test", (request, response) => {
-  // const index = user.findIndex((user) => {
-  //   return request.query.id == user.id;
-  // });
-  // response.json(user[index]);
-
   const data = readFromFile();
   response.send(data);
 });

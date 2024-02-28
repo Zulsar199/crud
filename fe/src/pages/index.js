@@ -70,28 +70,6 @@ export default function Home() {
 
   const isSubmitDisabled =
     user.name == "" || user.age == "" || user.phone == "";
-  // const warner = (input, type) => {
-  //   let style = {};
-  //   if (input === "") {
-  //     style = { borderColor: "red" };
-  //   } else if (
-  //     type === "age" &&
-  //     (typeof input !== "number" || input.length < 3 || input.length > 1)
-  //   ) {
-  //     style = { borderColor: "red" };
-  //   } else if (
-  //     type === "phone" &&
-  //     (typeof input !== "number" || input.length !== 8)
-  //   ) {
-  //     style = { borderColor: "red" };
-  //   } else if (
-  //     type === "name" &&
-  //     (typeof input !== "string" || input.length < 3 || input.length > 100)
-  //   ) {
-  //     style = { borderColor: "red" };
-  //   }
-  //   return style;
-  // };
 
   if (isPopupOpen) {
     position = {
@@ -120,16 +98,6 @@ export default function Home() {
     });
     console.log("index", index);
     data[index] = { id: id, name: name, age: age, phone: phone };
-    // const updateUser = {
-    //   data[index].id: id,
-
-    // }
-    // const newData = data.filter((user) => {
-    //   return user.id != id;
-    // });
-    // newData.push(newJson);
-
-    // setData(newData);
     setData(data);
   };
 
@@ -149,21 +117,12 @@ export default function Home() {
       setWarningMessage("All fields are required.");
       return; // Prevent submission if there are validation errors
     }
-    if (
-      !/^[a-zA-Z]+$/.test(user.name)
-    ) {
-      setWarningMessage(
-        "The name must consist of letters."
-      );
+    if (!/^[a-zA-Z]+$/.test(user.name)) {
+      setWarningMessage("The name must consist of letters.");
       return;
     }
-    if (
-      user.name.length < 3 ||
-      user.name.length > 100
-    ) {
-      setWarningMessage(
-        "The name must be between 3 and 100 characters long."
-      );
+    if (user.name.length < 3 || user.name.length > 100) {
+      setWarningMessage("The name must be between 3 and 100 characters long.");
       return;
     }
     // Assuming age and phone are numbers and have specific length requirements
@@ -191,7 +150,6 @@ export default function Home() {
     }).then((res) => res.json());
     setData(res);
     console.log(data);
-    // warner();
     resetUser();
     // Clear the warning message after successful submission
     setWarningMessage("");
@@ -202,7 +160,7 @@ export default function Home() {
     updateAge(editAge);
     updateName(editName);
     updatePhone(editPhone);
-
+    setWarningMessage("");
     handleOpenPopup();
   };
 
@@ -227,7 +185,7 @@ export default function Home() {
         style={userCreateStyle}
         className="flex flex-col items-center gap-[50px]"
       >
-        <div className="w-[300px] h-[250px] border border-gray-300 px-3 py-5 flex flex-col gap-5 rounded-xl mt-[70px]">
+        <div className="w-[300px]  border border-gray-300 px-3 py-5 flex flex-col gap-5 rounded-xl mt-[70px]">
           <h1 className="text-center text-xl mb-5">User Create</h1>
           <form className="flex flex-col gap-3" onSubmit={addData}>
             <div className="flex justify-between">
@@ -235,11 +193,8 @@ export default function Home() {
               <input
                 onChange={(event) => updateName(event.target.value)}
                 className="border rounded-md"
-                // style={warner(user.name, "name")}
                 name="name"
                 value={user.name}
-                // placeholder={user.name === "" ? warner(user.name) : ""}
-                // placeholder="hello"
               ></input>
             </div>
 
@@ -248,10 +203,8 @@ export default function Home() {
               <input
                 onChange={(event) => updateAge(event.target.value)}
                 className="border rounded-md"
-                // style={warner(user.age, "age")}
                 name="age"
                 value={user.age}
-                // placeholder={user.age === "" ? warner(user.age) : ""}
               ></input>
             </div>
             <div className="flex justify-between">
@@ -259,10 +212,8 @@ export default function Home() {
               <input
                 onChange={(event) => updatePhone(event.target.value)}
                 className="border rounded-md"
-                // style={warner(user.phone, "phone")}
                 name="phone"
                 value={user.phone}
-                // placeholder={user.phone === "" ?"Username is required" : ""}
               ></input>
             </div>
 
@@ -277,12 +228,12 @@ export default function Home() {
             </button>
           </form>
         </div>
-        <div className="overflow-x-auto border border-gray-300 rounded-xl p-3">
+        <div className="overflow-x-auto border border-gray-300 rounded-xl p-3 min-w-[700px]">
           <table className="min-w-full divide-y divide-gray-400 ">
             <thead>
               <tr>
                 <th>#</th>
-                <th>id</th>
+                {/* <th>id</th> */}
                 <th>name</th>
                 <th>age</th>
                 <th>phone</th>
@@ -291,9 +242,9 @@ export default function Home() {
             </thead>
             <tbody className="divide-y divide-gray-200">
               {data?.map((el, i) => (
-                <tr className="*:px-3 " key={el.id}>
+                <tr className="*:px-3 *:text-center" key={el.id}>
                   <td className="w-10">{i + 1}</td>
-                  <td className="w-10">{el.id}</td>
+                  {/* <td className="w-10">{el.id}</td> */}
                   <td className="w-[300px]">{el.name}</td>
                   <td className="w-3">{el.age}</td>
                   <td className="w-[150px]">{el.phone}</td>

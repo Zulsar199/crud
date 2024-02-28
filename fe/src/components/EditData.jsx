@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 const EditData = (props) => {
+  const [warningMessage, setWarningMessage] = useState("");
   const [user, setUser] = useState({
     id: props.id,
     name: props.user.name,
@@ -14,11 +15,37 @@ const EditData = (props) => {
       ...prevUser,
       [name]: value,
     }));
+    setWarningMessage("");
   };
 
   const editData = async (event) => {
     event.preventDefault();
     console.log("event:", event);
+    if (user.name === "" || user.age === "" || user.phone === "") {
+      setWarningMessage("All fields are required.");
+      return; // Prevent submission if there are validation errors
+    }
+    if (!/^[a-zA-Z]+$/.test(user.name)) {
+      setWarningMessage("The name must consist of letters.");
+      return;
+    }
+    if (user.name.length < 3 || user.name.length > 100) {
+      setWarningMessage("The name must be between 3 and 100 characters long.");
+      return;
+    }
+    // Assuming age and phone are numbers and have specific length requirements
+    if (isNaN(user.age)) {
+      setWarningMessage("Age must be number");
+      return;
+    }
+    if (Number(user.age) >= 110) {
+      setWarningMessage("Age must be less than 110");
+      return;
+    }
+    if (isNaN(user.phone) || user.phone.length !== 8) {
+      setWarningMessage("Phone must be an 8-digit number.");
+      return;
+    }
 
     const res = await fetch("http://localhost:8080/user", {
       method: "PATCH",
@@ -46,7 +73,7 @@ const EditData = (props) => {
   console.log(user, props.id);
 
   return (
-    <div className="w-[300px] h-[250px] bg-white border border-gray-300 px-3 py-5 flex flex-col gap-5 rounded-xl">
+    <div className="w-[300px] bg-white border border-gray-300 px-3 py-5 flex flex-col gap-5 rounded-xl">
       <h1 className="text-center text-xl mb-5">User Update</h1>
       <form className="flex flex-col gap-3" onSubmit={editData}>
         <div className="flex justify-between">
@@ -77,6 +104,7 @@ const EditData = (props) => {
             value={user.phone}
           ></input>
         </div>
+        {warningMessage && <p style={{ color: "red" }}>{warningMessage}</p>}
 
         <button
           type="submit"
